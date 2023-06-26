@@ -9,8 +9,8 @@ namespace TP4.Backend.Objetos
     internal class Equipo
     {
         public string Estado { get; set; }
-        public Double Hora { get; set; }
-        public Double Cambio { get; set; }
+        public double Hora { get; set; }
+        public double? Cambio { get; set; }
         public void siguienteEvento()
         {
 
@@ -28,6 +28,9 @@ namespace TP4.Backend.Objetos
             }
 
         }
+
+
+
 
     }
 }
