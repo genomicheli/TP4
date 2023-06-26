@@ -8,7 +8,7 @@ namespace TP4.Backend.Objetos
 {
     internal class Tecnico
     {
-        public String Estado { get; set; }
-        public int Cola { get; set; }
+        public String Estado { get; set; } = "Libre";
+        public int Cola { get; set; } = 0;
     }
 }

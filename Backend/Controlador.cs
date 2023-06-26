@@ -13,18 +13,21 @@ namespace TP4.Backend
         public List<double> VectorEventos { get; }
         public Equipo?[]? EquiposActuales { get; }
         public List<int> posiciones { get; }
-        public Fila FilaAnterior { get; }
+        public Fila FilaAnterior { get; set; }
 
-        public void generarDatos(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila generarFila(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             //va celda por celda y llama a los metodos responsables de generar sus datos en orden
 
-            cargarSiguienteEvento(LimInf, LimSup, Prob, tiempo, AntesC, DespuesC);
+            Fila FilaActual = new Fila();
 
+            if (reloj != 0) { FilaActual = cargarSiguienteEvento(LimInf, LimSup, Prob, tiempo, AntesC, DespuesC); }
+
+            return FilaActual;
 
         }
 
-        public void cargarSiguienteEvento(int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila cargarSiguienteEvento(int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             double reloj = VectorEventos.Min();
             int minIndice = VectorEventos.IndexOf(reloj); //cuando paso el indice tengo que restar 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,6 +49,9 @@ namespace TP4.Backend
                     break;
             }
 
+            FilaAnterior = FilaActual;
+
+            return FilaActual;
         }
 
         //todos los metodos se deberian llamar igual y diferenciarse unicamente por sus parametros???
