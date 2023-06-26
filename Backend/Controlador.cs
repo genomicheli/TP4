@@ -11,33 +11,20 @@ namespace TP4.Backend
     internal class Controlador
     {
         public List<double> VectorEventos { get; }
-        public List<Equipo> EquiposActuales { get; }
+        public Equipo?[]? EquiposActuales { get; }
+        public List<int> posiciones { get; }
         public Fila FilaAnterior { get; }
 
-        public void generarDatos(double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC)
+        public void generarDatos(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             //va celda por celda y llama a los metodos responsables de generar sus datos en orden
 
-            cargarSiguienteEvento(LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC);
+            cargarSiguienteEvento(LimInf, LimSup, Prob, tiempo, AntesC, DespuesC);
 
 
         }
-        private Arreglo seleccionarArreglo(double rnd, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE)
-        {
-            Arreglo arreglo = new Arreglo();
-            string tipoArreglo = "";
-            double tiempo = 0;
 
-            //bajo mecanismos misteriosos, decidir el equipo que toca y setear su tiempo
-            //hello como carajo hago esto??
-
-            arreglo.Tipo = tipoArreglo;
-            arreglo.Tiempo = tiempo;
-
-            return arreglo;
-        }
-
-        public void cargarSiguienteEvento(int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC)
+        public void cargarSiguienteEvento(int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             double reloj = VectorEventos.Min();
             int minIndice = VectorEventos.IndexOf(reloj); //cuando paso el indice tengo que restar 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -46,14 +33,16 @@ namespace TP4.Backend
             switch (minIndice)
             {
                 case 0:
-                    FilaActual = cargarLlegadaEquipo(reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC);
+                    FilaActual = cargarLlegadaEquipo(reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC);
                     break;
                 case 1:
-                    if (FilaAnterior.TipoArreglo == "C") { FilaActual = cargarSuspensión(reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC); }
-                    else { FilaActual = cargarFinalizacionEvento(reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC); };
+                    if (FilaAnterior.TipoArreglo == "C") { FilaActual = cargarSuspensión(reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC); }
+                    else { FilaActual = cargarFinalizacionEvento(reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC); };
                     break;
                 default:
-                    FilaActual = cargarReactivación(minIndice-2, reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC);
+                    //y que si no esta listo?? what then <- entonce no entra por aca??? whats not cliking here queen
+                    //tiene que estar Diponible Y SER EL MENOR HORA DE TODO EL ARREGLO <- this is a made up problem. no importa en que orden decida ponerlo listo, solo en que orden los atiende
+                    FilaActual = cargarReactivación(minIndice - 2, reloj, DespuesC);
                     break;
             }
 
@@ -61,7 +50,7 @@ namespace TP4.Backend
 
         //todos los metodos se deberian llamar igual y diferenciarse unicamente por sus parametros???
 
-        public Fila cargarLlegadaEquipo(double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC)
+        public Fila cargarLlegadaEquipo(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             Random generador = new Random();
             GeneradorRNDDistribución generadorUniforme = new GeneradorRNDDistribución();
@@ -95,7 +84,8 @@ namespace TP4.Backend
                     equipo.Estado = "EA";
                     equipo.Hora = reloj;
 
-                    EquiposActuales.Add(equipo);
+                    EquiposActuales[posiciones[0]] = equipo;
+                    posiciones.RemoveAt(0);
 
                     FilaActual.EquiposAceptados = FilaAnterior.EquiposAceptados + 1;
                 }
@@ -103,19 +93,21 @@ namespace TP4.Backend
                 {
                     FilaActual.EquiposAceptados = FilaAnterior.EquiposAceptados;
                 }
-
             }
             else
             {
                 //llamar a cargarFinalizacion
-
+                generarFinalización(posiciones[0], reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
                 tecnico.Estado = "Ocupado";
                 equipo.Estado = "SA";
                 equipo.Hora = reloj;
-                EquiposActuales.Add(equipo);
+                EquiposActuales[posiciones[0]] = equipo;
+                posiciones.RemoveAt(0);
 
                 FilaActual.EquiposAceptados = FilaAnterior.EquiposAceptados + 1;
             }
+
+            // si tan solo pudieras usar reflection para obtener una propiedad de cierto nombre y actualizarla... oh well
 
             FilaActual.E1 = EquiposActuales[0];
             FilaActual.E2 = EquiposActuales[1];
@@ -129,7 +121,7 @@ namespace TP4.Backend
 
             return FilaActual;
         }
-        public Fila cargarFinalizacionEvento(double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC)
+        public Fila cargarFinalizacionEvento(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
         {
             //Se fija en el vector de equipos, si uno esa esperando, cambio el estado a SA y llamo al metodo generar tiempo de finalizacion
 
@@ -142,24 +134,30 @@ namespace TP4.Backend
 
             for (int i = 0; i < 4; i++)
             {
-                if (EquiposActuales[i].Estado == "SA")
-                {
-                    permanencia += EquiposActuales[i].Hora;
-                    EquiposActuales.Remove(EquiposActuales[i]);
+                if(EquiposActuales[i] is not null) {
+                    if (EquiposActuales[i].Estado == "SA")
+                    {
+                        permanencia += EquiposActuales[i].Hora;
+                        EquiposActuales[i] = null;
+                        posiciones.Add(i);
+                    }
+                    //si tan solo hubiera un objeto queue FIFO que resolviera esto... oh well.
+                    //las D deberian tener prioridad... i will kill mysefl
+                    if (((EquiposActuales[i].Estado == "EA" && EquiposActuales[indice].Estado == "D") || EquiposActuales[i].Estado == "D"))
+                    {
+                        if (menor == 0 || EquiposActuales[i].Hora < menor)
+                        {
+                            menor = EquiposActuales[i].Hora;
+                            indice = i;
+                        }
+                    }
                 }
 
-                if (EquiposActuales[i].Estado=="EA") {
-                    if(menor == 0 || EquiposActuales[i].Hora < menor)
-                    {
-                        menor = EquiposActuales[i].Hora;
-                        indice = i;
-                    }
-                }  
             }
 
             if (indice > -1) {
                 EquiposActuales[indice].Estado = "SA";
-                generarFinalización(indice, reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC, FilaActual);
+                generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
                 tecnico.Cola -= 1;
             }
             else
@@ -183,7 +181,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarSuspensión(double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC) {
+        public Fila cargarSuspensión(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC) {
 
             Tecnico tecnico = new Tecnico();
             Fila FilaActual = new Fila();
@@ -208,7 +206,7 @@ namespace TP4.Backend
             if (indice > -1)
             {
                 EquiposActuales[indice].Estado = "SA";
-                generarFinalización(indice, reloj, LimInf, LimSup, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE, AntesC, DespuesC, FilaActual);
+                generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
             }
             else
             {
@@ -232,7 +230,7 @@ namespace TP4.Backend
 
         }
 
-        public Fila cargarReactivación(int indice, double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC)
+        public Fila cargarReactivación(int indice, double reloj, int DespuesC)
         {
             Tecnico tecnico = new Tecnico();
             tecnico.Cola = FilaAnterior.Tecnico.Cola;
@@ -271,15 +269,21 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public void generarFinalización(int indice, double reloj, int LimInf, int LimSup, double ProbA, double tiempoA, double ProbB, double tiempoB, double ProbC, double tiempoC, double ProbD, double tiempoD, double ProbE, double tiempoE, int AntesC, int DespuesC, Fila FilaActual)
+        public void generarFinalización(int indice, double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC, Fila FilaActual)
         {
+
             Random generador = new Random();
+            GeneradorRNDDistribución generadorDistribución = new GeneradorRNDDistribución();
+
             //Tipo Arreglo
 
-            Double rndTipoArreglo = generador.NextDouble();
+            Double rndTipoArreglo = generador.NextDouble(); // No dejarias que se genere un numero fuera del rango entre 0 y 1... cierto?
             FilaActual.RNDTipoArreglo = rndTipoArreglo;
 
-            Arreglo tipoArreglo = seleccionarArreglo(rndTipoArreglo, ProbA, tiempoA, ProbB, tiempoB, ProbC, tiempoC, ProbD, tiempoD, ProbE, tiempoE);
+            string[] opciones = { "A", "B", "C", "E", "D" };
+            Arreglo tipoArreglo = new Arreglo();
+            tipoArreglo.generarTipo(rndTipoArreglo, Prob, opciones, tiempo);
+                
             FilaActual.TipoArreglo = tipoArreglo.Tipo;
 
             //Finalización
