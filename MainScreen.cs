@@ -19,15 +19,16 @@ namespace TP4
         private NumericUpDown[] Tiempos;
         private NumericUpDown[] DistribucionUniforme;
         private NumericUpDown[] VariacionC;
-        private List<Fila>? Iteraciones;
+        bool EstaTodoBien = true;
         public MainScreen()
         {
+
             InitializeComponent();
             Probabilidades = new NumericUpDown[] { num_Probabilidad_A, num_Probabilidad_B, num_Probabilidad_C, num_Probabilidad_D, num_Probabilidad_E };
             Tiempos = new NumericUpDown[] { num_Tiempo_A, num_Tiempo_B, num_Tiempo_C, num_Tiempo_D, num_Tiempo_E };
             DistribucionUniforme = new NumericUpDown[] { num_Inf, num_Sup };
             VariacionC = new NumericUpDown[] { num_Tiempo_1, num_Tiempo_2 };
-            dgvColas.DataSource = Iteraciones;
+            
         }
 
         // Método para establecer el valor predeterminado en los NumericUpDown dentro de un GroupBox
@@ -79,6 +80,7 @@ namespace TP4
             {
                 // Muestra un MessageBox de error indicando que las probabilidades no son adecuadas
                 MessageBox.Show("Las probabilidades ingresadas no forman una probabilidad acumulada apropiada. Por favor, reviselas.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                EstaTodoBien = false;
                 return; // Sale del método después de mostrar el MessageBox
             }
             else
@@ -88,6 +90,7 @@ namespace TP4
                 {
                     // Muestra un MessageBox de error indicando que los tiempos no son lógicos
                     MessageBox.Show("Los tiempos definidos para el trabajo C no son lógicos. Por favor, reviselos.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    EstaTodoBien = false;
                     return; // Sale del método después de mostrar el MessageBox
                 }
             }
@@ -99,7 +102,8 @@ namespace TP4
             {
                 if (tiempo.Value == 0)
                 {
-                    MessageBox.Show("Los tiempos de ejecución de los trabajos no pueden ser nulos. Revise.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Los tiempos de ejecución de los trabajos no pueden ser nulos. Por favor, Revise.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    EstaTodoBien = false;
                     return;
                 }
             }
@@ -108,9 +112,30 @@ namespace TP4
                 if (tiempo.Value == 0)
                 {
                     MessageBox.Show("Los tiempos invlucrados en el trabajo C no pueden ser nulos. Revise.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    EstaTodoBien = false;
                     return;
                 }
             }
+        }
+
+        public double[] NumericUpDownsToDouble(NumericUpDown[] Arreglo)
+        {
+            double[] ArregloToDouble = new double[Arreglo.Length];
+            for (int i = 0; i < Arreglo.Length; i++)
+            {
+                ArregloToDouble[i] = Convert.ToDouble(Arreglo[i].Value);
+            }
+            return ArregloToDouble;
+        }
+
+        public int[] NumericUpDownsToInt(NumericUpDown[] Arreglo)
+        {
+            int[] ArregloToInt = new int[Arreglo.Length];
+            for (int i = 0; i < Arreglo.Length; i++)
+            {
+                ArregloToInt[i] = Convert.ToInt32(Arreglo[i].Value);
+            }
+            return ArregloToInt;
         }
 
         private void btn_Limpiar_Click(object sender, EventArgs e)
@@ -120,14 +145,6 @@ namespace TP4
             LimpiarNumericUpDowns(); // Llama a la función LimpiarNumericUpDowns para limpiar los NumericUpDown dentro del GroupBox.
 
             dgvColas.Rows.Clear(); // Borra todas las filas en el control DataGridView llamado dgvColas.
-        }
-
-        private void Limites_ValueChanged(object sender, EventArgs e)
-        {
-            if (num_Inf.Value > num_Sup.Value)
-            {
-                num_Inf.Value = num_Sup.Value - 1;
-            }
         }
 
         private void Parametros_ValueChanged(object sender, EventArgs e)
@@ -140,8 +157,49 @@ namespace TP4
 
         private void btn_Simular_Click(object sender, EventArgs e)
         {
+
             CheckearTiemposNulos();
             CheckearErrores();
+
+            if (EstaTodoBien)
+            {
+                Controlador Controlador = new Controlador();
+                List<Fila>? Iteraciones = new List<Fila>();
+                dgvColas.DataSource = Iteraciones;
+                double Reloj = 0;
+                int CantidadIteraciones = 0;
+
+                double[] TiemposToDouble = NumericUpDownsToDouble(Tiempos);
+                double[] ProbabilidadesToDouble = NumericUpDownsToDouble(Probabilidades);
+                double[] UniformeToDouble = NumericUpDownsToDouble(DistribucionUniforme);
+                double[] VariacionToDouble = NumericUpDownsToDouble(VariacionC);
+
+                double TiempoSimulación = Convert.ToDouble(num_Tiempo_Simular.Value);
+                double MinutoInicial = Convert.ToDouble(num_Minuto.Value);
+
+                while (Reloj <= TiempoSimulación)
+                {
+                    Fila FilaActual = new Fila();
+                    FilaActual = Controlador.generarFila(Reloj, UniformeToDouble[0], UniformeToDouble[1], ProbabilidadesToDouble, TiemposToDouble, VariacionToDouble[0], VariacionToDouble[1]);
+
+                    if (Reloj == 0)
+                    {
+                        Reloj = FilaActual.ProxLlegada;
+                    }
+                    else
+                    {
+                        Reloj = FilaActual.Reloj;
+                    }
+
+                    if ((Reloj >= MinutoInicial && CantidadIteraciones <= num_Iteraciones.Value) || Reloj >= TiempoSimulación)
+                    {
+                        Iteraciones.Add(FilaActual);
+                    }
+                    CantidadIteraciones++;
+
+                }
+            }
+
 
         }
     }

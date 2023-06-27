@@ -10,11 +10,11 @@ namespace TP4.Backend
     internal class Fila
     {
         public double Reloj { get; set; } = 0;
-        public double? RNDLlegada { get; set; }
+        public double RNDLlegada { get; set; }
         public double? TiempoLlegada { get; set; }
-        public double? ProxLlegada { get; set; }
+        public double ProxLlegada { get; set; }
         public double? RNDTipoArreglo { get; set; }
-        public string? TipoArreglo { get; set; }
+        public string TipoArreglo { get; set; } = "";
         public double? RNDFinalizacion { get; set; }
         public double? TiempoFinalizacion { get; set; }
         public double? ProxFinalizacion { get; set; }

@@ -170,10 +170,12 @@
             // num_Tiempo_2
             // 
             num_Tiempo_2.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            num_Tiempo_2.Increment = new decimal(new int[] { 15, 0, 0, 0 });
             num_Tiempo_2.Location = new Point(409, 360);
             num_Tiempo_2.Name = "num_Tiempo_2";
             num_Tiempo_2.Size = new Size(99, 27);
             num_Tiempo_2.TabIndex = 27;
+            num_Tiempo_2.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // lbl_Probabilidad
             // 
@@ -228,10 +230,12 @@
             // num_Tiempo_1
             // 
             num_Tiempo_1.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
+            num_Tiempo_1.Increment = new decimal(new int[] { 15, 0, 0, 0 });
             num_Tiempo_1.Location = new Point(409, 302);
             num_Tiempo_1.Name = "num_Tiempo_1";
             num_Tiempo_1.Size = new Size(99, 27);
             num_Tiempo_1.TabIndex = 26;
+            num_Tiempo_1.Value = new decimal(new int[] { 15, 0, 0, 0 });
             // 
             // lbl_Tipo_C
             // 
@@ -251,7 +255,7 @@
             num_Inf.Name = "num_Inf";
             num_Inf.Size = new Size(99, 27);
             num_Inf.TabIndex = 0;
-            num_Inf.ValueChanged += Limites_ValueChanged;
+            num_Inf.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // lbl_Tipo_D
             // 
@@ -272,6 +276,7 @@
             num_Tiempo_E.Name = "num_Tiempo_E";
             num_Tiempo_E.Size = new Size(119, 27);
             num_Tiempo_E.TabIndex = 15;
+            num_Tiempo_E.Value = new decimal(new int[] { 90, 0, 0, 0 });
             // 
             // lbl_Tiempo_2
             // 
@@ -285,6 +290,7 @@
             // 
             // num_Probabilidad_E
             // 
+            num_Probabilidad_E.DecimalPlaces = 2;
             num_Probabilidad_E.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Probabilidad_E.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
             num_Probabilidad_E.Location = new Point(52, 198);
@@ -292,9 +298,11 @@
             num_Probabilidad_E.Name = "num_Probabilidad_E";
             num_Probabilidad_E.Size = new Size(119, 27);
             num_Probabilidad_E.TabIndex = 14;
+            num_Probabilidad_E.Value = new decimal(new int[] { 2, 0, 0, 65536 });
             // 
             // num_Probabilidad_A
             // 
+            num_Probabilidad_A.DecimalPlaces = 2;
             num_Probabilidad_A.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Probabilidad_A.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
             num_Probabilidad_A.Location = new Point(52, 66);
@@ -302,6 +310,7 @@
             num_Probabilidad_A.Name = "num_Probabilidad_A";
             num_Probabilidad_A.Size = new Size(119, 27);
             num_Probabilidad_A.TabIndex = 6;
+            num_Probabilidad_A.Value = new decimal(new int[] { 3, 0, 0, 65536 });
             // 
             // num_Sup
             // 
@@ -311,7 +320,7 @@
             num_Sup.Name = "num_Sup";
             num_Sup.Size = new Size(99, 27);
             num_Sup.TabIndex = 1;
-            num_Sup.ValueChanged += Limites_ValueChanged;
+            num_Sup.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // lbl_Tiempo_1
             // 
@@ -332,6 +341,7 @@
             num_Tiempo_D.Name = "num_Tiempo_D";
             num_Tiempo_D.Size = new Size(119, 27);
             num_Tiempo_D.TabIndex = 13;
+            num_Tiempo_D.Value = new decimal(new int[] { 60, 0, 0, 0 });
             // 
             // num_Tiempo_A
             // 
@@ -342,6 +352,7 @@
             num_Tiempo_A.Name = "num_Tiempo_A";
             num_Tiempo_A.Size = new Size(119, 27);
             num_Tiempo_A.TabIndex = 7;
+            num_Tiempo_A.Value = new decimal(new int[] { 120, 0, 0, 0 });
             // 
             // lbl_Inf
             // 
@@ -366,6 +377,7 @@
             // 
             // num_Probabilidad_D
             // 
+            num_Probabilidad_D.DecimalPlaces = 2;
             num_Probabilidad_D.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Probabilidad_D.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
             num_Probabilidad_D.Location = new Point(52, 165);
@@ -373,9 +385,11 @@
             num_Probabilidad_D.Name = "num_Probabilidad_D";
             num_Probabilidad_D.Size = new Size(119, 27);
             num_Probabilidad_D.TabIndex = 12;
+            num_Probabilidad_D.Value = new decimal(new int[] { 1, 0, 0, 65536 });
             // 
             // num_Probabilidad_B
             // 
+            num_Probabilidad_B.DecimalPlaces = 2;
             num_Probabilidad_B.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Probabilidad_B.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
             num_Probabilidad_B.Location = new Point(52, 99);
@@ -383,6 +397,7 @@
             num_Probabilidad_B.Name = "num_Probabilidad_B";
             num_Probabilidad_B.Size = new Size(119, 27);
             num_Probabilidad_B.TabIndex = 8;
+            num_Probabilidad_B.Value = new decimal(new int[] { 25, 0, 0, 131072 });
             // 
             // lbl_Explicacion_1
             // 
@@ -415,6 +430,7 @@
             num_Tiempo_C.Name = "num_Tiempo_C";
             num_Tiempo_C.Size = new Size(119, 27);
             num_Tiempo_C.TabIndex = 11;
+            num_Tiempo_C.Value = new decimal(new int[] { 180, 0, 0, 0 });
             // 
             // num_Tiempo_B
             // 
@@ -425,6 +441,7 @@
             num_Tiempo_B.Name = "num_Tiempo_B";
             num_Tiempo_B.Size = new Size(119, 27);
             num_Tiempo_B.TabIndex = 9;
+            num_Tiempo_B.Value = new decimal(new int[] { 60, 0, 0, 0 });
             // 
             // lbl_Sup
             // 
@@ -448,6 +465,7 @@
             // 
             // num_Probabilidad_C
             // 
+            num_Probabilidad_C.DecimalPlaces = 2;
             num_Probabilidad_C.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Probabilidad_C.Increment = new decimal(new int[] { 10, 0, 0, 131072 });
             num_Probabilidad_C.Location = new Point(52, 132);
@@ -455,6 +473,7 @@
             num_Probabilidad_C.Name = "num_Probabilidad_C";
             num_Probabilidad_C.Size = new Size(119, 27);
             num_Probabilidad_C.TabIndex = 10;
+            num_Probabilidad_C.Value = new decimal(new int[] { 15, 0, 0, 131072 });
             // 
             // btn_Limpiar
             // 
@@ -558,17 +577,21 @@
             // 
             num_Iteraciones.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Iteraciones.Location = new Point(190, 71);
+            num_Iteraciones.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             num_Iteraciones.Name = "num_Iteraciones";
             num_Iteraciones.Size = new Size(95, 27);
             num_Iteraciones.TabIndex = 2;
+            num_Iteraciones.Value = new decimal(new int[] { 100000, 0, 0, 0 });
             // 
             // num_Tiempo_Simular
             // 
             num_Tiempo_Simular.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Tiempo_Simular.Location = new Point(190, 39);
+            num_Tiempo_Simular.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
             num_Tiempo_Simular.Name = "num_Tiempo_Simular";
             num_Tiempo_Simular.Size = new Size(95, 27);
             num_Tiempo_Simular.TabIndex = 0;
+            num_Tiempo_Simular.Value = new decimal(new int[] { 2500, 0, 0, 0 });
             // 
             // MainScreen
             // 

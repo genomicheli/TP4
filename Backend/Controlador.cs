@@ -10,12 +10,12 @@ namespace TP4.Backend
 {
     internal class Controlador
     {
-        public List<double> VectorEventos { get; }
-        public Equipo?[]? EquiposActuales { get; }
-        public List<int> posiciones { get; }
-        public Fila FilaAnterior { get; set; }
+        public double?[]? VectorEventos { get; } = new double?[6];
+        public Equipo?[]? EquiposActuales { get; } = new Equipo?[4];
+        public List<int> posiciones { get; } = new List<int> { 0, 1, 2, 3 };
+        public Fila FilaAnterior { get; set; } = new Fila();
 
-        public Fila generarFila(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila generarFila(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
         {
             //va celda por celda y llama a los metodos responsables de generar sus datos en orden
 
@@ -24,14 +24,24 @@ namespace TP4.Backend
             if (reloj != 0) { FilaActual = cargarSiguienteEvento(LimInf, LimSup, Prob, tiempo, AntesC, DespuesC); }
             else { generarLlegada(FilaActual, reloj);}
 
+            FilaAnterior = FilaActual;
+
             return FilaActual;
         }
 
-        public Fila cargarSiguienteEvento(int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila cargarSiguienteEvento(double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
         {
-            double reloj = VectorEventos.Min();
-            int minIndice = VectorEventos.IndexOf(reloj); //cuando paso el indice tengo que restar 2!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            Fila FilaActual = new Fila();
+            double reloj = (double)VectorEventos[0];
+            int minIndice = 0;
+            for (int i = 0; i < 6; i++)
+            {
+                if (VectorEventos[i] is not null && VectorEventos[i] < reloj)
+                {
+                        reloj = (double)VectorEventos[i];
+                        minIndice = i;
+                }
+            }
+            Fila FilaActual;
 
             switch (minIndice)
             {
@@ -49,7 +59,7 @@ namespace TP4.Backend
                         {
                             if (menor == 0 || EquiposActuales[i].Hora < menor)
                             {
-                                menor = EquiposActuales[i].Hora;
+                                menor = (double)EquiposActuales[i].Hora;
                                 indice = i;
                             }
                         }
@@ -66,12 +76,10 @@ namespace TP4.Backend
                     break;
             }
 
-            FilaAnterior = FilaActual;
-
             return FilaActual;
         }
 
-        public Fila cargarLlegadaEquipo(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila cargarLlegadaEquipo(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
         {
             GeneradorRNDDistribución generadorUniforme = new GeneradorRNDDistribución();
             Fila FilaActual = new Fila();
@@ -95,12 +103,12 @@ namespace TP4.Backend
                 // acepta el equipo
                 if (cola < 3)
                 {
-                    tecnico.Cola += 1;
+                    tecnico.Cola = cola + 1;
 
                     equipo.Estado = "EA";
                     equipo.Hora = reloj;
-
-                    EquiposActuales[posiciones[0]] = equipo;
+                    int aux = posiciones[0];
+                    EquiposActuales[aux] = equipo;
                     posiciones.RemoveAt(0);
 
                     FilaActual.EquiposAceptados = FilaAnterior.EquiposAceptados + 1;
@@ -112,20 +120,18 @@ namespace TP4.Backend
             }
             else //el tecnico estaba libre
             {
-                //llamar a cargarFinalizacion
-                generarFinalización(posiciones[0], reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
-
-                tecnico.Estado = "Ocupado";
                 equipo.Estado = "SA";
                 equipo.Hora = reloj;
 
                 EquiposActuales[posiciones[0]] = equipo;
+                generarFinalización(posiciones[0], reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
                 posiciones.RemoveAt(0);
 
                 FilaActual.EquiposAceptados = FilaAnterior.EquiposAceptados + 1;
             }
 
             // si tan solo pudieras usar reflection para obtener una propiedad de cierto nombre y actualizarla... oh well
+            tecnico.Estado = "Ocupado";
 
             FilaActual.E1 = EquiposActuales[0];
             FilaActual.E2 = EquiposActuales[1];
@@ -140,7 +146,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarFinalizacionEvento(double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC)
+        public Fila cargarFinalizacionEvento(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
         {
             //Se fija en el vector de equipos, si uno esa esperando, cambio el estado a SA y llamo al metodo generar tiempo de finalizacion
 
@@ -149,27 +155,36 @@ namespace TP4.Backend
 
             double menor = 0;
             int indice = -1;
-            Equipo EquipoAAtender = new Equipo();
+            Equipo EquipoAAtender = null;
             double permanencia = 0;
+
+            FilaActual.Reloj = reloj;
+
+            FilaActual.ProxLlegada = FilaAnterior.ProxLlegada;
+
+            tecnico.Estado = "Ocupado";
+            int cola = FilaAnterior.Tecnico.Cola;
 
             for (int i = 0; i < 4; i++)
             {
-                if(EquiposActuales[i] is not null) {
-                    if (EquiposActuales[i].Estado == "SA")
-                    {
-                        permanencia = reloj - EquiposActuales[i].Hora;
-                        EquiposActuales[i] = null;
-                        posiciones.Add(i);
-                    }
+                if(EquiposActuales[i] != null) {
 
-                    if (((EquiposActuales[i].Estado == "EA" && EquipoAAtender.Estado != "D") || EquiposActuales[i].Estado == "D"))
+                    if ((EquiposActuales[i].Estado == "EA" && EquipoAAtender?.Estado != "D") || EquiposActuales[i].Estado == "D")
                     {
                         if (menor == 0 || EquiposActuales[i].Hora < menor)
                         {
-                            menor = EquiposActuales[i].Hora;
+                            menor = (double)EquiposActuales[i].Hora;
                             indice = i;
                             EquipoAAtender = EquiposActuales[i];
                         }
+                    }
+
+                    if (EquiposActuales[i].Estado == "SA")
+                    {
+                        permanencia = (double)(reloj - EquiposActuales[i].Hora);
+                        EquiposActuales[i] = null;
+                        posiciones.Add(i);
+                        VectorEventos[indice + 2] = null;
                     }
                 }
             }
@@ -177,7 +192,7 @@ namespace TP4.Backend
             if (indice != -1) {
                 EquipoAAtender.Estado = "SA";
                 generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
-                tecnico.Cola -= 1;
+                tecnico.Cola = cola - 1;
             }
             else
             {
@@ -199,32 +214,45 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarSuspensión(int indice, double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC) {
+        public Fila cargarSuspensión(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC) {
 
             Tecnico tecnico = new Tecnico();
             Fila FilaActual = new Fila();
+            Equipo EquipoAAtender = new Equipo();
 
             double menor = 0;
+
+            FilaActual.Reloj = reloj;
+
+            FilaActual.ProxLlegada = FilaAnterior.ProxLlegada;
+
+            int cola = FilaAnterior.Tecnico.Cola;
 
             EquiposActuales[indice].Estado = "T";
 
             for (int i = 0; i < 4; i++)
             {
-                if (EquiposActuales[i] is not null && EquiposActuales[i].Estado == "EA")
+                if (EquiposActuales[i] != null)
                 {
-                    if (menor == 0 || EquiposActuales[i].Hora < menor)
+                    if (((EquiposActuales[i].Estado == "EA" && EquipoAAtender?.Estado != "D") || EquiposActuales[i].Estado == "D"))
                     {
-                        menor = EquiposActuales[i].Hora;
-                        indice = i;
+                        if (menor == 0 || EquiposActuales[i].Hora < menor)
+                        {
+                            menor = (double)EquiposActuales[i].Hora;
+                            indice = i;
+                            EquipoAAtender = EquiposActuales[i];
+                        }
                     }
                 }
             }
+            
 
             if (indice > -1)
             {
                 EquiposActuales[indice].Estado = "SA";
                 generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
-                tecnico.Cola -= 1;
+                tecnico.Cola = cola - 1;
+                tecnico.Estado = "Ocupado";
             }
             else
             {
@@ -247,7 +275,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarReactivación(int indice, double reloj, int DespuesC)
+        public Fila cargarReactivación(int indice, double reloj, double DespuesC)
         {
             Tecnico tecnico = new Tecnico();
             tecnico.Cola = FilaAnterior.Tecnico.Cola;
@@ -268,9 +296,8 @@ namespace TP4.Backend
             {
                 EquiposActuales[indice].Estado = "SA";
                 FilaActual.ProxFinalizacion = EquiposActuales[indice].Cambio + DespuesC;
-                tecnico.Estado = "Ocupado";
             }
-
+            tecnico.Estado = "Ocupado";
             FilaActual.Tecnico = tecnico;
 
             FilaActual.E1 = EquiposActuales[0];
@@ -286,7 +313,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public void generarFinalización(int indice, double reloj, int LimInf, int LimSup, double[] Prob, double[] tiempo, int AntesC, int DespuesC, Fila FilaActual)
+        public void generarFinalización(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC, Fila FilaActual)
         {
 
             Random generador = new Random();
@@ -312,16 +339,18 @@ namespace TP4.Backend
 
             double tiempoFin = reloj + finalizacion;
 
-            if (tipoArreglo.Tipo != "C")
+            if (tipoArreglo.Tipo == "C")
             {
-                FilaActual.ProxFinalizacion = tiempoFin;
+                FilaActual.ProxFinalizacion = reloj + AntesC;
+                EquiposActuales[indice].Cambio = tiempoFin - DespuesC;
+                VectorEventos[indice + 2] = tiempoFin - DespuesC;
             }
             else
             {
-                FilaActual.ProxFinalizacion += reloj + AntesC;
-                EquiposActuales[indice].Hora = tiempoFin - DespuesC;
+                FilaActual.ProxFinalizacion = tiempoFin;
             }
 
+            VectorEventos[1] = FilaActual.ProxFinalizacion;
         }
 
         public void generarLlegada(Fila FilaActual, double reloj)
@@ -337,6 +366,8 @@ namespace TP4.Backend
 
             double proxLlegada = reloj + tiempoLlegada;
             FilaActual.ProxLlegada = proxLlegada;
+
+            VectorEventos[0] = FilaActual.ProxLlegada;
         }
     }
 

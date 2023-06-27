@@ -8,29 +8,9 @@ namespace TP4.Backend.Objetos
 {
     internal class Equipo
     {
-        public string Estado { get; set; }
-        public double Hora { get; set; }
+        public string? Estado { get; set; }
+        public double? Hora { get; set; }
         public double? Cambio { get; set; }
-        public void siguienteEvento()
-        {
-
-            string evento = "";
-
-            switch (Estado)
-            {
-                case "SA":
-                    evento = "En Segundo Plano";
-                    break;
-                case "T":
-                    evento = "Reactivar";
-                    break;
-
-            }
-
-        }
-
-
-
 
     }
 }
