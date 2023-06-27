@@ -17,7 +17,6 @@ namespace TP4.Backend
             string tipo = generadorDistribución.seleccionarOpcion(rnd, probabilidades, opciones);
 
             this.Tipo = tipo;
-            double auxTiempo = 0;
             switch (tipo)
             {
                 case "A":
@@ -44,7 +43,6 @@ namespace TP4.Backend
             double minutos = new double();
             GeneradorRNDDistribución generador = new GeneradorRNDDistribución();
             minutos = generador.generarRNDUniforme(rndFinalizacion, Tiempo - LimInf, Tiempo + LimSup);
-
 
             return minutos;
         }
