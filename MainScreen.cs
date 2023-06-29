@@ -198,6 +198,7 @@ namespace TP4
                     CantidadIteraciones++;
 
                 }
+                MessageBox.Show("ti finished daddy");
             }
 
 

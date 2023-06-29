@@ -195,20 +195,29 @@ namespace TP4.Backend
                         permanencia = (double)(reloj - EquiposActuales[i].Hora);
                         EquiposActuales[i] = null;
                         posiciones.Add(i);
-                        VectorEventos[indice + 2] = null;
+                        VectorEventos[i + 2] = null;
                     }
                 }
             }
 
             if (indice != -1) {
+                if (EquipoAAtender.Estado == "D") {
+                    FilaActual.ProxFinalizacion = reloj + DespuesC;
+                    VectorEventos[indice+2] = null; }
+                else
+                {
+                    generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
+                }
                 EquipoAAtender.Estado = "SA";
-                generarFinalización(indice, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
+                EquipoAAtender.Cambio = null;
                 EquiposActuales[indice] = EquipoAAtender;
-                cola = FilaAnterior.Tecnico.Cola - 1;
+                cola--;
+                
             }
             else
             {
                 tecnico.Estado = "Libre";
+                VectorEventos[1] = null;
             }
             tecnico.Cola = cola;
 
@@ -264,7 +273,14 @@ namespace TP4.Backend
             if (indice2 != -1)
             {
                 EquiposActuales[indice2].Estado = "SA";
-                generarFinalización(indice2, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual);
+                EquipoAAtender.Cambio = null;
+                if (EquipoAAtender.Estado == "D")
+                {
+                    FilaActual.ProxFinalizacion = reloj + DespuesC;
+                    VectorEventos[indice2 + 2] = null;
+                }
+                else { generarFinalización(indice2, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual); }
+                
                 cola--;
                 tecnico.Estado = "Ocupado";
             }
@@ -310,11 +326,12 @@ namespace TP4.Backend
             else
             {
                 EquiposActuales[indice].Estado = "SA";
+                EquiposActuales[indice].Cambio = null;
                 FilaActual.ProxFinalizacion = EquiposActuales[indice].Cambio + DespuesC;
                 cola--;
             }
 
-            VectorEventos[indice + 2] = null;
+            VectorEventos[indice + 2] = EquiposActuales[indice].Cambio;
 
             tecnico.Estado = "Ocupado";
             tecnico.Cola = cola;
@@ -358,7 +375,7 @@ namespace TP4.Backend
 
             double tiempoFin = reloj + finalizacion;
 
-            if (tipoArreglo.Tipo == "C")
+            if (tipoArreglo.Tipo == "C" && EquiposActuales[indice].Estado == "SA")
             {
                 FilaActual.ProxFinalizacion = reloj + AntesC;
                 EquiposActuales[indice].Cambio = tiempoFin - DespuesC;
