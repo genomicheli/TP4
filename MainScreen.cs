@@ -28,7 +28,7 @@ namespace TP4
             Tiempos = new NumericUpDown[] { num_Tiempo_A, num_Tiempo_B, num_Tiempo_C, num_Tiempo_D, num_Tiempo_E };
             DistribucionUniforme = new NumericUpDown[] { num_Inf, num_Sup };
             VariacionC = new NumericUpDown[] { num_Tiempo_1, num_Tiempo_2 };
-            
+
         }
 
         // Método para establecer el valor predeterminado en los NumericUpDown dentro de un GroupBox
@@ -102,7 +102,7 @@ namespace TP4
             {
                 if (tiempo.Value == 0)
                 {
-                    MessageBox.Show("Los tiempos de ejecución de los trabajos no pueden ser nulos. Por favor, Revise.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Los tiempos de ejecución de los trabajos no pueden ser nulos. Por favor, reviselos.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     EstaTodoBien = false;
                     return;
                 }
@@ -111,7 +111,7 @@ namespace TP4
             {
                 if (tiempo.Value == 0)
                 {
-                    MessageBox.Show("Los tiempos invlucrados en el trabajo C no pueden ser nulos. Revise.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Los tiempos invlucrados en el trabajo C no pueden ser nulos. Por favor, reviselos.", "¡Cuidado señor tecnico!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     EstaTodoBien = false;
                     return;
                 }
@@ -164,7 +164,7 @@ namespace TP4
             if (EstaTodoBien)
             {
                 Controlador Controlador = new Controlador();
-                List<Fila>? Iteraciones = new List<Fila>();
+                BindingList<Fila>? Iteraciones = new BindingList<Fila>();
                 dgvColas.DataSource = Iteraciones;
                 double Reloj = 0;
                 int CantidadIteraciones = 0;
@@ -198,10 +198,19 @@ namespace TP4
                     CantidadIteraciones++;
 
                 }
-                MessageBox.Show("Acabe!");
             }
 
 
         }
+
+        private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.Value != null && e.Value is double)
+            {
+                e.Value = ((double)e.Value).ToString("0.00"); // Aquí se especifica el formato deseado, en este caso "0.00" para dos decimales
+                e.FormattingApplied = true;
+            }
+        }
+
     }
 }
