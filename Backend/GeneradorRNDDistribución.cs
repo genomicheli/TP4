@@ -14,8 +14,6 @@ namespace TP4.Backend
             return LimInf + (seed * (LimSup - LimInf));
         }
 
-
-
         public string seleccionarOpcion(double rnd, double[] probabilidades, string[] opciones) {
 
             List<double> acumuladas =new List<double>();
