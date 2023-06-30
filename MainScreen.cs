@@ -128,14 +128,98 @@ namespace TP4
             return ArregloToDouble;
         }
 
-        public int[] NumericUpDownsToInt(NumericUpDown[] Arreglo)
+        private void CrearCabeceras()
         {
-            int[] ArregloToInt = new int[Arreglo.Length];
-            for (int i = 0; i < Arreglo.Length; i++)
+            dgvColas.Columns.Clear();
+
+            // Agregar las cabeceras principales
+            dgvColas.Columns.Add("RelojColumn", "Reloj");
+            dgvColas.Columns.Add("RNDLlegadaColumn", "RND Llegada");
+            dgvColas.Columns.Add("TiempoLlegadaColumn", "Tiempo Llegada");
+            dgvColas.Columns.Add("ProxLlegadaColumn", "Próxima Llegada");
+            dgvColas.Columns.Add("RNDTipoArregloColumn", "RND Tipo Arreglo");
+            dgvColas.Columns.Add("TipoArregloColumn", "Tipo Arreglo");
+            dgvColas.Columns.Add("RNDFinalizacionColumn", "RND Finalización");
+            dgvColas.Columns.Add("TiempoFinalizacionColumn", "Tiempo Finalización");
+            dgvColas.Columns.Add("ProxFinalizacionColumn", "Próxima Finalización");
+            dgvColas.Columns.Add("EstadoColumn", "Estado");
+            dgvColas.Columns.Add("ColaColumn", "Cola");
+
+            // Agregar las columnas iterativas
+            for (int i = 1; i <= 4; i++)
             {
-                ArregloToInt[i] = Convert.ToInt32(Arreglo[i].Value);
+                dgvColas.Columns.Add("Estado" + i + "Column", "Estado " + i);
+                dgvColas.Columns.Add("Hora" + i + "Column", "Hora " + i);
+                dgvColas.Columns.Add("Cambio" + i + "Column", "Cambio " + i);
             }
-            return ArregloToInt;
+
+            // Agregar las cabeceras restantes
+            dgvColas.Columns.Add("EquiposAtendidosColumn", "Equipos Atendidos");
+            dgvColas.Columns.Add("AcumPermanenciaColumn", "Acumulador Permanencia");
+            dgvColas.Columns.Add("EquiposSolicitantesColumn", "Equipos Solicitantes");
+            dgvColas.Columns.Add("EquiposAceptadosColumn", "Equipos Aceptados");
+        }
+
+        private void CrearCaceberasSecundarias()
+        {
+            dgvCabeceras.Columns.Clear();
+
+            // Columna Reloj 
+            DataGridViewColumn relojColumn = new DataGridViewTextBoxColumn();
+            relojColumn.Name = "RelojColumn";
+            relojColumn.HeaderText = "Reloj";
+            relojColumn.Width = 125;
+            relojColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            relojColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+            dgvCabeceras.Columns.Add(relojColumn);
+
+            // Columna Próxima Llegada 
+            DataGridViewColumn proximaLlegadaColumn = new DataGridViewTextBoxColumn();
+            proximaLlegadaColumn.Name = "ProximaLlegadaColumn";
+            proximaLlegadaColumn.HeaderText = "Próxima Llegada";
+            proximaLlegadaColumn.Width = 375;
+            proximaLlegadaColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            proximaLlegadaColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+            dgvCabeceras.Columns.Add(proximaLlegadaColumn);
+
+            // Columna Fin Atención 
+            DataGridViewColumn finAtencionColumn = new DataGridViewTextBoxColumn();
+            finAtencionColumn.Name = "FinAtencionColumn";
+            finAtencionColumn.HeaderText = "Fin Atención";
+            finAtencionColumn.Width = 625;
+            finAtencionColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            finAtencionColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+            dgvCabeceras.Columns.Add(finAtencionColumn);
+
+            // Columna Técnico 
+            DataGridViewColumn tecnicoColumn = new DataGridViewTextBoxColumn();
+            tecnicoColumn.Name = "TecnicoColumn";
+            tecnicoColumn.HeaderText = "Técnico";
+            tecnicoColumn.Width = 250;
+            tecnicoColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            tecnicoColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+            dgvCabeceras.Columns.Add(tecnicoColumn);
+
+            // Columnas Equipo 1 a 4 
+            for (int i = 1; i <= 4; i++)
+            {
+                DataGridViewColumn equipoColumn = new DataGridViewTextBoxColumn();
+                equipoColumn.Name = "Equipo" + i + "Column";
+                equipoColumn.HeaderText = "Equipo " + i;
+                equipoColumn.Width = 250;
+                equipoColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                equipoColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+                dgvCabeceras.Columns.Add(equipoColumn);
+            }
+
+            // Columna Acumuladores 
+            DataGridViewColumn acumuladoresColumn = new DataGridViewTextBoxColumn();
+            acumuladoresColumn.Name = "AcumuladoresColumn";
+            acumuladoresColumn.HeaderText = "Acumuladores";
+            acumuladoresColumn.Width = 500;
+            acumuladoresColumn.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            acumuladoresColumn.HeaderCell.Style.Font = new Font(dgvCabeceras.Font, FontStyle.Bold);
+            dgvCabeceras.Columns.Add(acumuladoresColumn);
         }
 
         private void btn_Limpiar_Click(object sender, EventArgs e)
@@ -164,8 +248,8 @@ namespace TP4
             if (EstaTodoBien)
             {
                 Controlador Controlador = new Controlador();
-                BindingList<Fila>? Iteraciones = new BindingList<Fila>();
-                dgvColas.DataSource = Iteraciones;
+                //BindingList<Fila>? Iteraciones = new BindingList<Fila>();
+                //dgvColas.DataSource = Iteraciones;
                 double Reloj = 0;
                 int CantidadIteraciones = 0;
 
@@ -177,11 +261,13 @@ namespace TP4
                 double TiempoSimulación = Convert.ToDouble(num_Tiempo_Simular.Value);
                 double MinutoInicial = Convert.ToDouble(num_Minuto.Value);
 
+                CrearCabeceras();
+                CrearCaceberasSecundarias();
+
                 while (Reloj <= TiempoSimulación)
                 {
                     Fila FilaActual = new Fila();
                     FilaActual = Controlador.generarFila(Reloj, UniformeToDouble[0], UniformeToDouble[1], ProbabilidadesToDouble, TiemposToDouble, VariacionToDouble[0], VariacionToDouble[1]);
-
                     if (Reloj == 0)
                     {
                         Reloj = FilaActual.ProxLlegada;
@@ -190,27 +276,109 @@ namespace TP4
                     {
                         Reloj = FilaActual.Reloj;
                     }
-
-                    if ((Reloj >= MinutoInicial && CantidadIteraciones <= num_Iteraciones.Value) || Reloj >= TiempoSimulación)
+                    if (Reloj >= MinutoInicial && CantidadIteraciones <= num_Iteraciones.Value)
                     {
-                        Iteraciones.Add(FilaActual);
+                        //Iteraciones.Add(FilaActual);
+                        dgvColas.Rows.Add(CrearDataGridViewRow(FilaActual));
                     }
                     CantidadIteraciones++;
-
                 }
             }
 
 
         }
 
+        private DataGridViewRow CrearDataGridViewRow(Fila fila)
+        {
+            DataGridViewRow row = new DataGridViewRow();
+
+            // Columna Reloj
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.Reloj });
+
+            // Columna RND Llegada
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.RNDLlegada });
+
+            // Columna Tiempo Llegada
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.TiempoLlegada });
+
+            // Columna Proxima Llegada
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.ProxLlegada });
+
+            // Columna RND Tipo Arreglo
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.RNDTipoArreglo });
+
+            // Columna Tipo Arreglo
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.TipoArreglo });
+
+            // Columna RND Finalizacion
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.RNDFinalizacion });
+
+            // Columna Tiempo Finalizacion
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.TiempoFinalizacion });
+
+            // Columna Proxima Finalizacion
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.ProxFinalizacion });
+
+            // Columna Estado del Técnico
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.Tecnico.Estado });
+
+            // Columna Cola del Técnico
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.Tecnico.Cola });
+
+            // Columnas Equipo (Estado, Hora, Cambio)
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Estado });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Hora });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Cambio });
+
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Estado });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Hora });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Cambio });
+
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Estado });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Hora });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Cambio });
+
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Estado });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Hora });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Cambio });
+
+            // Columna Equipos Atendidos
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.EquiposAtendidos });
+
+            // Columna Acumulador Permanencia
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.AcumPermanencia });
+
+            // Columna Equipos Solicitantes
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.EquiposSolicitantes });
+
+            // Columna Equipos Aceptados
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.EquiposAceptados });
+
+            return row;
+        }
+
+
         private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.Value != null && e.Value is double)
+            if (e.Value != null && e.Value is double && (e.ColumnIndex <= 22 || e.ColumnIndex == 24))
             {
                 e.Value = ((double)e.Value).ToString("0.00"); // Aquí se especifica el formato deseado, en este caso "0.00" para dos decimales
                 e.FormattingApplied = true;
             }
         }
+
+        private void dgvColas_Scroll(object sender, ScrollEventArgs e)
+        {
+            if (e.ScrollOrientation == ScrollOrientation.HorizontalScroll)
+            {
+                // Obtener la posición de desplazamiento horizontal de la primera DataGridView
+                int horizontalScrollValue = e.NewValue;
+
+                // Establecer la misma posición de desplazamiento horizontal en la segunda DataGridView
+                dgvCabeceras.HorizontalScrollingOffset = horizontalScrollValue;
+            }
+        }
+
 
     }
 }

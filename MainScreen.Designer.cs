@@ -73,6 +73,7 @@
             num_Minuto = new NumericUpDown();
             num_Iteraciones = new NumericUpDown();
             num_Tiempo_Simular = new NumericUpDown();
+            dgvCabeceras = new DataGridView();
             panel_Info.SuspendLayout();
             gb_Parametros.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)num_Tiempo_2).BeginInit();
@@ -94,6 +95,7 @@
             ((System.ComponentModel.ISupportInitialize)num_Minuto).BeginInit();
             ((System.ComponentModel.ISupportInitialize)num_Iteraciones).BeginInit();
             ((System.ComponentModel.ISupportInitialize)num_Tiempo_Simular).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dgvCabeceras).BeginInit();
             SuspendLayout();
             // 
             // lbl_Titulo
@@ -515,14 +517,15 @@
             dgvColas.AllowUserToResizeColumns = false;
             dgvColas.AllowUserToResizeRows = false;
             dgvColas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvColas.Location = new Point(12, 459);
+            dgvColas.Location = new Point(12, 490);
             dgvColas.Name = "dgvColas";
             dgvColas.RowHeadersVisible = false;
             dgvColas.RowHeadersWidth = 51;
             dgvColas.RowTemplate.Height = 29;
-            dgvColas.Size = new Size(1098, 323);
+            dgvColas.Size = new Size(1098, 292);
             dgvColas.TabIndex = 7;
             dgvColas.CellFormatting += Tabla_CellFormatting;
+            dgvColas.Scroll += dgvColas_Scroll;
             // 
             // groupBox1
             // 
@@ -574,6 +577,7 @@
             // 
             num_Minuto.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             num_Minuto.Location = new Point(190, 104);
+            num_Minuto.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             num_Minuto.Name = "num_Minuto";
             num_Minuto.Size = new Size(95, 27);
             num_Minuto.TabIndex = 3;
@@ -599,11 +603,27 @@
             num_Tiempo_Simular.TabIndex = 0;
             num_Tiempo_Simular.Value = new decimal(new int[] { 2500, 0, 0, 0 });
             // 
+            // dgvCabeceras
+            // 
+            dgvCabeceras.AllowUserToAddRows = false;
+            dgvCabeceras.AllowUserToDeleteRows = false;
+            dgvCabeceras.AllowUserToResizeColumns = false;
+            dgvCabeceras.AllowUserToResizeRows = false;
+            dgvCabeceras.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvCabeceras.Location = new Point(12, 458);
+            dgvCabeceras.Name = "dgvCabeceras";
+            dgvCabeceras.RowHeadersVisible = false;
+            dgvCabeceras.RowHeadersWidth = 51;
+            dgvCabeceras.RowTemplate.Height = 29;
+            dgvCabeceras.Size = new Size(1098, 26);
+            dgvCabeceras.TabIndex = 9;
+            // 
             // MainScreen
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1126, 794);
+            Controls.Add(dgvCabeceras);
             Controls.Add(groupBox1);
             Controls.Add(dgvColas);
             Controls.Add(btn_Simular);
@@ -611,7 +631,9 @@
             Controls.Add(btn_Limpiar);
             Controls.Add(gb_Parametros);
             Controls.Add(panel_Info);
+            MaximizeBox = false;
             Name = "MainScreen";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "MainScreen";
             panel_Info.ResumeLayout(false);
             panel_Info.PerformLayout();
@@ -637,6 +659,7 @@
             ((System.ComponentModel.ISupportInitialize)num_Minuto).EndInit();
             ((System.ComponentModel.ISupportInitialize)num_Iteraciones).EndInit();
             ((System.ComponentModel.ISupportInitialize)num_Tiempo_Simular).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dgvCabeceras).EndInit();
             ResumeLayout(false);
         }
 
@@ -686,5 +709,6 @@
         private Label lbl_Tiempo_Simulacion;
         private Label lbl_Minuto_Inicial;
         private Label lbl_Cantidad_Iteraciones;
+        private DataGridView dgvCabeceras;
     }
 }
