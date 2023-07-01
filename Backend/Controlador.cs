@@ -83,6 +83,7 @@ namespace TP4.Backend
         public Fila cargarLlegadaEquipo(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
         {
             GeneradorRNDDistribución generadorUniforme = new GeneradorRNDDistribución();
+            //Hola
             Fila FilaActual = new Fila();
             Tecnico tecnico = new Tecnico();
             Equipo equipo = new Equipo();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -229,6 +230,9 @@ namespace TP4
             LimpiarNumericUpDowns(); // Llama a la función LimpiarNumericUpDowns para limpiar los NumericUpDown dentro del GroupBox.
 
             dgvColas.Rows.Clear(); // Borra todas las filas en el control DataGridView llamado dgvColas.
+
+            txt_Promedio.Text = string.Empty;
+            txt_Porcentaje.Text = string.Empty;
         }
 
         private void Parametros_ValueChanged(object sender, EventArgs e)
@@ -283,9 +287,21 @@ namespace TP4
                     }
                     CantidadIteraciones++;
                 }
+                CalcularPromedio();
             }
 
 
+        }
+
+        public void CalcularPromedio()
+        {
+            int lastRowIndex = dgvColas.Rows.Count - 1;
+            DataGridViewRow lastRow = dgvColas.Rows[lastRowIndex];
+            double equiposAtendidos = Convert.ToDouble(lastRow.Cells["EquiposAtendidosColumn"].Value);
+            double acumuladorPermanencia = Convert.ToDouble(lastRow.Cells["AcumPermanenciaColumn"].Value);
+            double equiposSolicitantes = Convert.ToDouble(lastRow.Cells["EquiposSolicitantesColumn"].Value);
+            txt_Promedio.Text = Convert.ToString(Math.Round(acumuladorPermanencia / equiposAtendidos, 2));
+            txt_Porcentaje.Text = Convert.ToString(Math.Round((equiposAtendidos / equiposSolicitantes) * 100, 2));
         }
 
         private DataGridViewRow CrearDataGridViewRow(Fila fila)
