@@ -74,6 +74,10 @@
             num_Iteraciones = new NumericUpDown();
             num_Tiempo_Simular = new NumericUpDown();
             dgvCabeceras = new DataGridView();
+            lbl_Promedio = new Label();
+            lbl_Porcentaje = new Label();
+            txt_Promedio = new TextBox();
+            txt_Porcentaje = new TextBox();
             panel_Info.SuspendLayout();
             gb_Parametros.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)num_Tiempo_2).BeginInit();
@@ -482,7 +486,7 @@
             btn_Limpiar.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             btn_Limpiar.Location = new Point(334, 289);
             btn_Limpiar.Name = "btn_Limpiar";
-            btn_Limpiar.Size = new Size(202, 43);
+            btn_Limpiar.Size = new Size(202, 49);
             btn_Limpiar.TabIndex = 4;
             btn_Limpiar.Text = "Limpiar";
             btn_Limpiar.UseVisualStyleBackColor = true;
@@ -502,9 +506,9 @@
             // 
             btn_Simular.BackColor = Color.LightGreen;
             btn_Simular.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            btn_Simular.Location = new Point(334, 401);
+            btn_Simular.Location = new Point(334, 393);
             btn_Simular.Name = "btn_Simular";
-            btn_Simular.Size = new Size(202, 41);
+            btn_Simular.Size = new Size(202, 49);
             btn_Simular.TabIndex = 6;
             btn_Simular.Text = "Simular";
             btn_Simular.UseVisualStyleBackColor = false;
@@ -618,11 +622,49 @@
             dgvCabeceras.Size = new Size(1098, 26);
             dgvCabeceras.TabIndex = 9;
             // 
+            // lbl_Promedio
+            // 
+            lbl_Promedio.AutoSize = true;
+            lbl_Promedio.Location = new Point(198, 803);
+            lbl_Promedio.Name = "lbl_Promedio";
+            lbl_Promedio.Size = new Size(229, 20);
+            lbl_Promedio.TabIndex = 10;
+            lbl_Promedio.Text = "Promedio Permanencia (Minutos)";
+            // 
+            // lbl_Porcentaje
+            // 
+            lbl_Porcentaje.AutoSize = true;
+            lbl_Porcentaje.Location = new Point(594, 802);
+            lbl_Porcentaje.Name = "lbl_Porcentaje";
+            lbl_Porcentaje.Size = new Size(169, 20);
+            lbl_Porcentaje.TabIndex = 11;
+            lbl_Porcentaje.Text = "Porcentaje no atendidos";
+            // 
+            // txt_Promedio
+            // 
+            txt_Promedio.Enabled = false;
+            txt_Promedio.Location = new Point(433, 799);
+            txt_Promedio.Name = "txt_Promedio";
+            txt_Promedio.Size = new Size(125, 27);
+            txt_Promedio.TabIndex = 12;
+            // 
+            // txt_Porcentaje
+            // 
+            txt_Porcentaje.Enabled = false;
+            txt_Porcentaje.Location = new Point(772, 799);
+            txt_Porcentaje.Name = "txt_Porcentaje";
+            txt_Porcentaje.Size = new Size(125, 27);
+            txt_Porcentaje.TabIndex = 13;
+            // 
             // MainScreen
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1126, 794);
+            ClientSize = new Size(1126, 843);
+            Controls.Add(txt_Porcentaje);
+            Controls.Add(txt_Promedio);
+            Controls.Add(lbl_Porcentaje);
+            Controls.Add(lbl_Promedio);
             Controls.Add(dgvCabeceras);
             Controls.Add(groupBox1);
             Controls.Add(dgvColas);
@@ -661,6 +703,7 @@
             ((System.ComponentModel.ISupportInitialize)num_Tiempo_Simular).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvCabeceras).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -710,5 +753,9 @@
         private Label lbl_Minuto_Inicial;
         private Label lbl_Cantidad_Iteraciones;
         private DataGridView dgvCabeceras;
+        private Label lbl_Promedio;
+        private Label lbl_Porcentaje;
+        private TextBox txt_Promedio;
+        private TextBox txt_Porcentaje;
     }
 }
