@@ -35,5 +35,29 @@ namespace TP4.Backend
             return opciones[opciones.Length - 1];
 
         }
+
+        public double seleccionarOpcion(double rnd, double[] probabilidades, double[] opciones)
+        {
+
+            List<double> acumuladas = new List<double>();
+
+            acumuladas.Clear();
+            double acumulada = 0.0;
+
+            foreach (var probabilidad in probabilidades)
+            {
+                acumulada += probabilidad;
+                acumuladas.Add(acumulada);
+            }
+
+            for (int i = 0; i < acumuladas.Count; i++)
+            {
+                if (rnd < acumuladas[i])
+                    return opciones[i];
+            }
+            return opciones[opciones.Length - 1];
+
+        }
+
     }
 }

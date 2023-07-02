@@ -19,6 +19,8 @@ namespace TP4.Backend
         public double? TiempoFinalizacion { get; set; }
         public double? ProxFinalizacion { get; set; }
         public Tecnico Tecnico { get; set; } = new Tecnico();
+        public double? RNDSecciones { get; set; }
+        public double? Secciones { get; set; }
         public Equipo? E1 { get; set; }
         public Equipo? E2 { get; set; }
         public Equipo? E3 { get; set; }

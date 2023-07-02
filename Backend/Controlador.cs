@@ -15,7 +15,9 @@ namespace TP4.Backend
         public List<int> posiciones { get; } = new List<int> { 0, 1, 2, 3 };
         public Fila FilaAnterior { get; set; } = new Fila();
 
-        public Fila generarFila(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
+
+
+        public Fila generarFila(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC)
         {
             //va celda por celda y llama a los metodos responsables de generar sus datos en orden
 
@@ -29,7 +31,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarSiguienteEvento(double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
+        public Fila cargarSiguienteEvento(double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC)
         {
             double reloj = (double)VectorEventos[0];
             int minIndice = 0;
@@ -73,14 +75,14 @@ namespace TP4.Backend
                 default:
                     //y que si no esta listo?? what then <- entonce no entra por aca??? whats not cliking here queen
                     //tiene que estar Diponible Y SER EL MENOR HORA DE TODO EL ARREGLO <- this is a made up problem. no importa en que orden decida ponerlo listo, solo en que orden los atiende
-                    FilaActual = cargarReactivación(minIndice - 2, reloj, DespuesC);
+                    FilaActual = cargarReactivación(minIndice - 2, reloj);
                     break;
             }
 
             return FilaActual;
         }
 
-        public Fila cargarLlegadaEquipo(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
+        public Fila cargarLlegadaEquipo(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC)
         {
             GeneradorRNDDistribución generadorUniforme = new GeneradorRNDDistribución();
             Fila FilaActual = new Fila();
@@ -157,7 +159,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarFinalizacionEvento(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC)
+        public Fila cargarFinalizacionEvento(double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC)
         {
             //Se fija en el vector de equipos, si uno esa esperando, cambio el estado a SA y llamo al metodo generar tiempo de finalizacion
 
@@ -202,7 +204,7 @@ namespace TP4.Backend
 
             if (indice != -1) {
                 if (EquipoAAtender.Estado == "D") {
-                    FilaActual.ProxFinalizacion = reloj + DespuesC;
+                    FilaActual.ProxFinalizacion = reloj + EquipoAAtender.TiempoPostC;
                     VectorEventos[indice+2] = null; }
                 else
                 {
@@ -236,7 +238,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarSuspensión(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC) {
+        public Fila cargarSuspensión(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC) {
 
             Tecnico tecnico = new Tecnico();
             Fila FilaActual = new Fila();
@@ -276,7 +278,7 @@ namespace TP4.Backend
                 EquipoAAtender.Cambio = null;
                 if (EquipoAAtender.Estado == "D")
                 {
-                    FilaActual.ProxFinalizacion = reloj + DespuesC;
+                    FilaActual.ProxFinalizacion = reloj + EquipoAAtender.TiempoPostC;
                     VectorEventos[indice2 + 2] = null;
                 }
                 else { generarFinalización(indice2, reloj, LimInf, LimSup, Prob, tiempo, AntesC, DespuesC, FilaActual); }
@@ -306,7 +308,7 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public Fila cargarReactivación(int indice, double reloj, double DespuesC)
+        public Fila cargarReactivación(int indice, double reloj)
         {
             Tecnico tecnico = new Tecnico();
             int cola = FilaAnterior.Tecnico.Cola;
@@ -327,7 +329,7 @@ namespace TP4.Backend
             {
                 EquiposActuales[indice].Estado = "SA";
                 EquiposActuales[indice].Cambio = null;
-                FilaActual.ProxFinalizacion = EquiposActuales[indice].Cambio + DespuesC;
+                FilaActual.ProxFinalizacion = EquiposActuales[indice].Cambio + EquiposActuales[indice].TiempoPostC;
                 cola--;
             }
 
@@ -350,9 +352,10 @@ namespace TP4.Backend
             return FilaActual;
         }
 
-        public void generarFinalización(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double DespuesC, Fila FilaActual)
+        public void generarFinalización(int indice, double reloj, double LimInf, double LimSup, double[] Prob, double[] tiempo, double AntesC, double[] DespuesC, Fila FilaActual)
         {
             Random generador = new Random();
+            GeneradorRNDDistribución generadorDistribución = new GeneradorRNDDistribución();
 
             //Tipo Arreglo
 
@@ -378,8 +381,35 @@ namespace TP4.Backend
             if (tipoArreglo.Tipo == "C" && EquiposActuales[indice].Estado == "SA")
             {
                 FilaActual.ProxFinalizacion = reloj + AntesC;
-                EquiposActuales[indice].Cambio = tiempoFin - DespuesC;
-                VectorEventos[indice + 2] = tiempoFin - DespuesC;
+
+                double rndSecciones = generador.NextDouble();
+                FilaActual.RNDSecciones = rndSecciones;
+
+                double[] probSecciones = { 0, 0.33, 0.67};
+                double[] opcionesSecciones = { 1000, 1500, 2000 };
+
+                double secciones = generadorDistribución.seleccionarOpcion(rndSecciones, probSecciones, opcionesSecciones);
+
+                FilaActual.Secciones = secciones;
+
+                double tiempoC;
+
+                switch (secciones)
+                {
+                    case 1000:
+                        tiempoC = DespuesC[0];
+                        break;
+                    case 1500:
+                        tiempoC = DespuesC[1];
+                        break;
+                    default:
+                        tiempoC = DespuesC[2];
+                        break;
+                }
+                
+                EquiposActuales[indice].Cambio = tiempoFin - tiempoC;
+                EquiposActuales[indice].TiempoPostC = tiempoC;
+                VectorEventos[indice + 2] = tiempoFin - tiempoC;
             }
             else
             {

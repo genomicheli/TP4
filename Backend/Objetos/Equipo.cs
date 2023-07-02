@@ -11,6 +11,7 @@ namespace TP4.Backend.Objetos
         public string? Estado { get; set; }
         public double? Hora { get; set; }
         public double? Cambio { get; set; }
+        public double? TiempoPostC { get; set; }
 
     }
 }
