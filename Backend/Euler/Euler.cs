@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,8 @@ namespace TP4.Backend.Euler
 {
     internal class Euler
     { 
-        public FilaEuler generarFilaEuler(double h, double S_inicial) { 
+
+        public static FilaEuler generarFilaEuler(double h, double S_inicial) { 
 
             FilaEuler Fila = new FilaEuler();
 
@@ -25,7 +27,7 @@ namespace TP4.Backend.Euler
             return Fila;
         }
 
-        public FilaEuler generarFilaEuler(double h, double S_inicial, FilaEuler? FilaAnterior)
+        public static FilaEuler generarFilaEuler(double h, double S_inicial, FilaEuler? FilaAnterior)
         {
             FilaEuler Fila = new FilaEuler();
 
@@ -43,32 +45,40 @@ namespace TP4.Backend.Euler
             return Fila;
         }
 
-        public double calcularTiempo(double h, double S_inicial)
+        public static DataTable GenerarDataTable(double h, double S_inicial)
         {
-            FilaEuler fila = new FilaEuler();
+            DataTable dataTable = new DataTable();
+            dataTable.Columns.Add("Tiempo", typeof(double));
+            dataTable.Columns.Add("Sectores", typeof(double));
+            dataTable.Columns.Add("fx", typeof(double));
+            dataTable.Columns.Add("S_siguiente", typeof(double));
 
-            fila = generarFilaEuler(h, S_inicial);
+            FilaEuler filaActual = generarFilaEuler(h, S_inicial);
+            dataTable.Rows.Add(filaActual.Tiempo, filaActual.Sectores, filaActual.fx, filaActual.S_siguiente);
 
-            while (fila.Sectores > 0)
+            while (filaActual.Sectores > 0)
             {
-                fila = generarFilaEuler(h, S_inicial, fila);
+                filaActual = generarFilaEuler(h, filaActual.S_siguiente, filaActual);
+                dataTable.Rows.Add(filaActual.Tiempo, filaActual.Sectores, filaActual.fx, filaActual.S_siguiente);
             }
 
-            double tiempo = fila.Tiempo;
-
-            return tiempo;
+            return dataTable;
         }
 
-        public double[] calcularTiempos(double h)
+        public static double ObtenerTiempo(DataTable dataTable)
         {
-            double[] tiempos = new double[3];
-
-            tiempos[0] = calcularTiempo(h, 1000);
-            tiempos[1] = calcularTiempo(h, 1500);
-            tiempos[2] = calcularTiempo(h, 2000);
-
-            return tiempos;
+            if (dataTable.Rows.Count > 0)
+            {
+                DataRow ultimaFila = dataTable.Rows[dataTable.Rows.Count - 1];
+                double tiempo = Convert.ToDouble(ultimaFila["Tiempo"]);
+                return tiempo;
+            }
+            else
+            {
+                throw new Exception("El DataTable está vacío. No se puede obtener el tiempo de la última fila.");
+            }
         }
+
 
 
 

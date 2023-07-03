@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TP4.Backend;
+using TP4.Backend.Euler;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace TP4
@@ -21,6 +22,12 @@ namespace TP4
         private NumericUpDown[] DistribucionUniforme;
         private NumericUpDown[] VariacionC;
         bool EstaTodoBien = true;
+
+        private DataTable dt1000;
+        private DataTable dt1500;
+        private DataTable dt2000;
+
+        private double[] ValoresFinalC = new double[3];
         public MainScreen()
         {
 
@@ -28,8 +35,22 @@ namespace TP4
             Probabilidades = new NumericUpDown[] { num_Probabilidad_A, num_Probabilidad_B, num_Probabilidad_C, num_Probabilidad_D, num_Probabilidad_E };
             Tiempos = new NumericUpDown[] { num_Tiempo_A, num_Tiempo_B, num_Tiempo_C, num_Tiempo_D, num_Tiempo_E };
             DistribucionUniforme = new NumericUpDown[] { num_Inf, num_Sup };
-            VariacionC = new NumericUpDown[] { num_Tiempo_1, num_Tiempo_2 };
+            VariacionC = new NumericUpDown[] { num_Tiempo_1 };
 
+        }
+
+        public void GenerarDT(double h)
+        {
+            dt1000 = Euler.GenerarDataTable(h, 1000);
+            dt1500 = Euler.GenerarDataTable(h, 1500);
+            dt2000 = Euler.GenerarDataTable(h, 2000);
+        }
+
+        public void ObtenerValoresCFinales()
+        {
+            ValoresFinalC[0] = Euler.ObtenerTiempo(dt1000);
+            ValoresFinalC[1] = Euler.ObtenerTiempo(dt1500);
+            ValoresFinalC[2] = Euler.ObtenerTiempo(dt2000);
         }
 
         // Método para establecer el valor predeterminado en los NumericUpDown dentro de un GroupBox
@@ -68,10 +89,9 @@ namespace TP4
             // Obtiene los valores de los tiempos desde los controles NumericUpDown
             decimal TiempoTrabajoC = num_Tiempo_C.Value;
             decimal TiempoHastaAutomatización = num_Tiempo_1.Value;
-            decimal UltimoPeriodoDeTrabajo = num_Tiempo_2.Value;
 
             // Comprueba la condición: TiempoTrabajoC > UltimoPeriodoDeTrabajo + TiempoHastaAutomatización
-            return TiempoTrabajoC > UltimoPeriodoDeTrabajo + TiempoHastaAutomatización;
+            return TiempoTrabajoC > TiempoHastaAutomatización;
         }
 
         public void CheckearErrores()
@@ -145,6 +165,8 @@ namespace TP4
             dgvColas.Columns.Add("ProxFinalizacionColumn", "Próxima Finalización");
             dgvColas.Columns.Add("EstadoColumn", "Estado");
             dgvColas.Columns.Add("ColaColumn", "Cola");
+            dgvColas.Columns.Add("RNDSectoresColumn", "RND Sectores");
+            dgvColas.Columns.Add("SectoresColumn", "Sectores");
 
             // Agregar las columnas iterativas
             for (int i = 1; i <= 4; i++)
@@ -152,6 +174,7 @@ namespace TP4
                 dgvColas.Columns.Add("Estado" + i + "Column", "Estado " + i);
                 dgvColas.Columns.Add("Hora" + i + "Column", "Hora " + i);
                 dgvColas.Columns.Add("Cambio" + i + "Column", "Cambio " + i);
+                dgvColas.Columns.Add("TiempoC" + i + "Column", "Tiempo C" + i);
             }
 
             // Agregar las cabeceras restantes
@@ -252,8 +275,6 @@ namespace TP4
             if (EstaTodoBien)
             {
                 Controlador Controlador = new Controlador();
-                //BindingList<Fila>? Iteraciones = new BindingList<Fila>();
-                //dgvColas.DataSource = Iteraciones;
                 double Reloj = 0;
                 int CantidadIteraciones = 0;
 
@@ -265,13 +286,16 @@ namespace TP4
                 double TiempoSimulación = Convert.ToDouble(num_Tiempo_Simular.Value);
                 double MinutoInicial = Convert.ToDouble(num_Minuto.Value);
 
+                GenerarDT(Convert.ToDouble(num_h.Value));
+                ObtenerValoresCFinales();
+
                 CrearCabeceras();
                 CrearCaceberasSecundarias();
 
                 while (Reloj <= TiempoSimulación)
                 {
                     Fila FilaActual = new Fila();
-                    FilaActual = Controlador.generarFila(Reloj, UniformeToDouble[0], UniformeToDouble[1], ProbabilidadesToDouble, TiemposToDouble, VariacionToDouble[0], VariacionToDouble[1]);
+                    FilaActual = Controlador.generarFila(Reloj, UniformeToDouble[0], UniformeToDouble[1], ProbabilidadesToDouble, TiemposToDouble, VariacionToDouble[0], ValoresFinalC);
                     if (Reloj == 0)
                     {
                         Reloj = FilaActual.ProxLlegada;
@@ -282,7 +306,6 @@ namespace TP4
                     }
                     if (Reloj >= MinutoInicial && CantidadIteraciones <= num_Iteraciones.Value)
                     {
-                        //Iteraciones.Add(FilaActual);
                         dgvColas.Rows.Add(CrearDataGridViewRow(FilaActual));
                     }
                     CantidadIteraciones++;
@@ -341,22 +364,32 @@ namespace TP4
             // Columna Cola del Técnico
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.Tecnico.Cola });
 
-            // Columnas Equipo (Estado, Hora, Cambio)
+            // Columna RND Secciones.
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.RNDSecciones });
+
+            // Columna Secciones.
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.Secciones });
+
+            // Columnas Equipo (Estado, Hora, Cambio, Tiempo C)
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Estado });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Hora });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.Cambio });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E1?.TiempoPostC });
 
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Estado });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Hora });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.Cambio });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E2?.TiempoPostC });
 
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Estado });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Hora });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.Cambio });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E3?.TiempoPostC });
 
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Estado });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Hora });
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.Cambio });
+            row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.E4?.TiempoPostC });
 
             // Columna Equipos Atendidos
             row.Cells.Add(new DataGridViewTextBoxCell { Value = fila.EquiposAtendidos });
@@ -376,7 +409,7 @@ namespace TP4
 
         private void Tabla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (e.Value != null && e.Value is double && (e.ColumnIndex <= 22 || e.ColumnIndex == 24))
+            if (e.Value != null && e.Value is double && (e.ColumnIndex <= 28 || e.ColumnIndex == 30) && Convert.ToDouble(e.Value) != 0)
             {
                 e.Value = ((double)e.Value).ToString("0.00"); // Aquí se especifica el formato deseado, en este caso "0.00" para dos decimales
                 e.FormattingApplied = true;

@@ -58,10 +58,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="lbl_Explicacion_2.Text" xml:space="preserve">
-    <value>Tras iniciar el formateo de disco se puede dejar el 
-equipo trabajando solo tras una cierta
-cantidad de minutos (1) y luego venir a terminar 
-el trabajo cuando falten una cierta cantidad de 
-minutos (2)</value>
+    <value>Tras iniciar el formateo de disco se puede dejar el equipo trabajando 
+solo tras una cierta cantidad de minutos (1) y luego venir a terminar el 
+trabajo cuando falten una cierta cantidad de minutos (x)</value>
   </data>
 </root>
