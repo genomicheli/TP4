@@ -472,13 +472,15 @@
             // 
             // btn_Exportar
             // 
+            btn_Exportar.Enabled = false;
             btn_Exportar.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             btn_Exportar.Location = new Point(779, 290);
             btn_Exportar.Name = "btn_Exportar";
             btn_Exportar.Size = new Size(202, 49);
             btn_Exportar.TabIndex = 5;
-            btn_Exportar.Text = "Exportar";
+            btn_Exportar.Text = "Ver Tabla Euler";
             btn_Exportar.UseVisualStyleBackColor = true;
+            btn_Exportar.Click += btn_Exportar_Click;
             // 
             // btn_Simular
             // 

@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using TP4.Backend;
 using TP4.Backend.Euler;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using OfficeOpenXml;
+using System.Drawing;
 
 namespace TP4
 {
@@ -64,7 +66,14 @@ namespace TP4
 
                 foreach (var numericUpDown in numericUpDowns)
                 {
-                    numericUpDown.Value = default; // Establece el valor predeterminado
+                    if (numericUpDown.Minimum > 0)
+                    {
+                        numericUpDown.Value = numericUpDown.Minimum;
+                    }
+                    else
+                    {
+                        numericUpDown.Value = default; // Establece el valor predeterminado
+                    }
                 }
             }
         }
@@ -184,6 +193,29 @@ namespace TP4
             dgvColas.Columns.Add("EquiposAceptadosColumn", "Equipos Aceptados");
         }
 
+        public void CrearArchivoExcel(string nombreArchivo)
+        {
+
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            string directorioDocumentos = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string rutaCompleta = Path.Combine(directorioDocumentos, nombreArchivo);
+
+            if (File.Exists(rutaCompleta))
+            {
+                File.Delete(rutaCompleta);
+            }
+
+            using (ExcelPackage package = new ExcelPackage())
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Datos");
+
+                AgregarDatosAExcel(dt1000, dt1500, dt2000, worksheet);
+
+                // Guardar el archivo
+                FileInfo fileInfo = new FileInfo(rutaCompleta);
+                package.SaveAs(fileInfo);
+            }
+        }
         private void CrearCaceberasSecundarias()
         {
             dgvCabeceras.Columns.Clear();
@@ -256,6 +288,8 @@ namespace TP4
 
             txt_Promedio.Text = string.Empty;
             txt_Porcentaje.Text = string.Empty;
+
+            btn_Exportar.Enabled = false;
         }
 
         private void Parametros_ValueChanged(object sender, EventArgs e)
@@ -311,6 +345,7 @@ namespace TP4
                     CantidadIteraciones++;
                 }
                 CalcularPromedio();
+                btn_Exportar.Enabled = true;
             }
 
 
@@ -427,7 +462,53 @@ namespace TP4
                 dgvCabeceras.HorizontalScrollingOffset = horizontalScrollValue;
             }
         }
+        public void AgregarDatosAExcel(DataTable tabla1, DataTable tabla2, DataTable tabla3, ExcelWorksheet hojaTrabajo)
+        {
 
+            // Configurar estilo de la celda combinada
+            hojaTrabajo.Cells["A1:O1"].Merge = true;
+            hojaTrabajo.Cells["A1:O1"].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            hojaTrabajo.Cells["A1:O1"].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            hojaTrabajo.Cells["A1:O1"].Style.Fill.BackgroundColor.SetColor(Color.Yellow);
+            hojaTrabajo.Cells["A1:O1"].Style.Border.BorderAround(OfficeOpenXml.Style.ExcelBorderStyle.Thick);
+            hojaTrabajo.Cells["A1:O1"].Style.Font.Bold = true;
+            hojaTrabajo.Cells["A1:O1"].Value = "Tablas de Euler para simulación continua";
 
+            // Dejar una fila de espacio
+            int filaInicio = 3;
+
+            // Insertar los datos de la tabla 1
+            InsertarDatosTablaEnExcel(tabla1, hojaTrabajo, filaInicio);
+            filaInicio += tabla1.Rows.Count + 2;
+
+            // Insertar los datos de la tabla 2
+            InsertarDatosTablaEnExcel(tabla2, hojaTrabajo, filaInicio);
+            filaInicio += tabla2.Rows.Count + 2;
+
+            // Insertar los datos de la tabla 3
+            InsertarDatosTablaEnExcel(tabla3, hojaTrabajo, filaInicio);
+        }
+        private void InsertarDatosTablaEnExcel(DataTable tabla, ExcelWorksheet hojaTrabajo, int filaInicio)
+        {
+            // Insertar los encabezados en negrita
+            for (int i = 0; i < tabla.Columns.Count; i++)
+            {
+                hojaTrabajo.Cells[filaInicio, i + 1].Value = tabla.Columns[i].ColumnName;
+                hojaTrabajo.Cells[filaInicio, i + 1].Style.Font.Bold = true;
+            }
+            // Insertar los datos de la tabla
+            for (int fila = 0; fila < tabla.Rows.Count; fila++)
+            {
+                for (int columna = 0; columna < tabla.Columns.Count; columna++)
+                {
+                    hojaTrabajo.Cells[filaInicio + fila + 1, columna + 1].Value = tabla.Rows[fila][columna];
+                }
+            }
+        }
+
+        private void btn_Exportar_Click(object sender, EventArgs e)
+        {
+            CrearArchivoExcel("TablaEuler.xlsx");
+        }
     }
 }
